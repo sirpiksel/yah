@@ -15,8 +15,9 @@ fn main() {
   const HELP: &'static str = "Usage: yah [OPTION]...
   Options:
   h, help         print help
-  s, spotlight    launch spotlight utility
-  c, char         launch charpicker";
+  a, appLaunch    start Application-Launcher
+  s, scrLaunch    start Script-Launcher
+  c, char         Launch Charpicker";
 
   // process arguments
   for arg in args.iter() {
