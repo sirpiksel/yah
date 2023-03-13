@@ -71,10 +71,12 @@ pub fn char() {
 pub fn launch_script() {
   // Hashmap of possible options: (Key: "command name", Value: "command")
   let options: HashMap<&str, &str> = HashMap::from([
-    ("kill Xorg", "pkill Xorg"),
-    ("kill chromium", "pkill chromium"),
     ("poweroff", "sudo poweroff"),
     ("reboot", "sudo reboot"),
+    ("standby", "xset dpms force suspend"),
+    ("sleep", "sudo zzz"),
+    ("kill chromium", "pkill chromium"),
+    ("kill Xorg", "pkill Xorg"),
   ]);
 
   // use fancy dmenu & launch output if supplied
