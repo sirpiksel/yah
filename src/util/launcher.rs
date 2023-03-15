@@ -5,7 +5,7 @@ use std::process::{Command, Output, Stdio};
 fn dmenu<'a>(map: HashMap<&str, &'a str>) -> Option<&'a str> {
   // setup dmenu command
   let mut selector = Command::new("dmenu")
-    .args(["-c", "-l", "5"])
+    .args(["-c", "-l", "10"])
     .stdin(Stdio::piped())
     .stdout(Stdio::piped())
     .spawn()
@@ -75,6 +75,7 @@ pub fn launch_script() {
     ("reboot", "sudo reboot"),
     ("standby", "xset dpms force suspend"),
     ("sleep", "sudo zzz"),
+    ("run", "dmenu_run -c -l 5"),
     ("kill chromium", "pkill chromium"),
     ("kill Xorg", "pkill Xorg"),
   ]);
@@ -99,7 +100,6 @@ pub fn launch_application() {
     ("inkscape", "inkscape"),
     ("lxappearance", "lxappearance"),
     ("nvidia", "nvidia-settings"),
-    ("order66", "killall chromium"),
     ("piper", "piper"),
     ("prismlauncher", "prismlauncher"),
     ("pycharm","pycharm"),
