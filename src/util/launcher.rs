@@ -78,6 +78,7 @@ pub fn launch_script() {
     ("run", "dmenu_run -c -l 5"),
     ("kill chromium", "pkill chromium"),
     ("kill Xorg", "pkill Xorg"),
+    ("kill Whatsapp", "pkill WhatsApp"),
   ]);
 
   // use fancy dmenu & launch output if supplied
