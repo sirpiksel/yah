@@ -92,6 +92,7 @@ pub fn launch_application() {
   // Hashmap of possible options: (Key: "program", Value: "launch command")
   let options: HashMap<&str, &str> = HashMap::from([
     ("arandr", "arandr"),
+    ("betterDiscord installer", "betterdiscord-installer"),
     ("bleachbit", "bleachbit"),
     ("chromium", "chromium"),
     ("clion", "/home/philip/.local/share/JetBrains/Toolbox/scripts/clion"),
@@ -106,9 +107,9 @@ pub fn launch_application() {
     ("prismlauncher", "prismlauncher"),
     ("pycharm", "/home/philip/.local/share/JetBrains/Toolbox/scripts/pycharm"),
     ("spotify", "spotify"),
+    ("toolbox", "jetbrains-toolbox"),
     ("tor", "tor-browser"),
     ("whatsapp", "whatsapp-nativefier"),
-    ("toolbox", "jetbrains-toolbox"),
   ]);
 
   // use fancy dmenu & launch output if supplied
