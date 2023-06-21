@@ -71,6 +71,7 @@ pub fn char() {
 pub fn launch_script() {
   // Hashmap of possible options: (Key: "command name", Value: "command")
   let options: HashMap<&str, &str> = HashMap::from([
+    ("install bD", "betterdiscord-installer"),
     ("kill Whatsapp", "pkill WhatsApp"),
     ("kill Xorg", "pkill Xorg"),
     ("kill chromium", "pkill chromium"),
@@ -92,7 +93,6 @@ pub fn launch_application() {
   // Hashmap of possible options: (Key: "program", Value: "launch command")
   let options: HashMap<&str, &str> = HashMap::from([
     ("arandr", "arandr"),
-    ("betterDiscord installer", "betterdiscord-installer"),
     ("bleachbit", "bleachbit"),
     ("chromium", "chromium"),
     ("clion", "/home/philip/.local/share/JetBrains/Toolbox/scripts/clion"),
