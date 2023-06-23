@@ -71,10 +71,10 @@ pub fn char() {
 pub fn launch_script() {
   // Hashmap of possible options: (Key: "command name", Value: "command")
   let options: HashMap<&str, &str> = HashMap::from([
-    ("install bD", "betterdiscord-installer"),
     ("kill Whatsapp", "pkill WhatsApp"),
     ("kill Xorg", "pkill Xorg"),
     ("kill chromium", "pkill chromium"),
+    ("manage bD", "betterdiscord-installer"),
     ("poweroff", "sudo poweroff"),
     ("reboot", "sudo reboot"),
     ("run", "dmenu_run -c -l 5"),
