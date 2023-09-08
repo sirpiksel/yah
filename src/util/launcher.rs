@@ -71,7 +71,6 @@ pub fn char() {
 pub fn launch_script() {
   // Hashmap of possible options: (Key: "command name", Value: "command")
   let options: HashMap<&str, &str> = HashMap::from([
-    ("kill Whatsapp", "pkill WhatsApp"),
     ("kill Xorg", "pkill Xorg"),
     ("kill chromium", "pkill chromium"),
     ("manage bD", "betterdiscord-installer"),
@@ -109,7 +108,7 @@ pub fn launch_application() {
     ("spotify", "spotify"),
     ("toolbox", "jetbrains-toolbox"),
     ("tor", "tor-browser"),
-    ("whatsapp", "whatsapp-nativefier"),
+    ("whatsapp", "whatsapp-for-linux"),
   ]);
 
   // use fancy dmenu & launch output if supplied
