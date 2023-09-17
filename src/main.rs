@@ -17,7 +17,8 @@ fn main() {
   h, help         print help
   a, appLaunch    start Application-Launcher
   s, scrLaunch    start Script-Launcher
-  c, char         Launch Charpicker";
+  c, char         start Charpicker
+  g, grab         start Screenshot-Tool";
 
   // process arguments
   for arg in args.iter() {
@@ -48,6 +49,14 @@ fn main() {
             error = true; break;
           }
         }
+        "g" | "grab" => {
+          if arg_depth == 0 {
+            arg_depth += 1;
+            args_sane.push_back("grab");
+          } else {
+            error = true; break;
+          }
+        }
         _ => { error = true; break; }
       }
     }
@@ -63,6 +72,7 @@ fn main() {
       Some("appLaunch") => { util::launcher::launch_application(); }
       Some("scrLaunch") => { util::launcher::launch_script(); }
       Some("char") => { util::launcher::char(); }
+      Some("grab") => { util::launcher::screenshot(); }
       Some(_) => { panic!("invalid element in args_sane"); }
       None => { panic!("no elements in args_sane"); }
     }

@@ -32,6 +32,46 @@ fn dmenu<'a>(map: HashMap<&str, &'a str>) -> Option<&'a str> {
   }
 }
 
+pub fn screenshot() {
+  // generate Hashmap of possible options: (Key: "name of display: e.g. DP-4", Value: "WxH+X+Y")
+  // example output of xrandr --listmonitors:
+  // Monitors: 3
+  //  0: +DP-4 2560/527x1440/396+1229+0  DP-4
+  //  1: +DP-1 1280/338x1024/270+3789+0  DP-1
+  //  2: +DP-2 1229/370x1536/300+0+0  DP-2
+  let mut options: HashMap<&str, &str> = HashMap::new();
+  let raw_out: Output = Command::new("xrandr").args(["--listmonitors"]).output().expect("Failed to run xrandr.");
+  let raw_out_str: &str = std::str::from_utf8(raw_out.stdout.as_slice()).expect("Failed to convert from &[u8] to &str.");
+  let raw_out_vec: Vec<&str> = raw_out_str.split("\n").collect();
+  // get the 2nd column and strip the "+" from the name; get 3rd column and convert from "W/mmwxH/mmh+X+Y" to "WxH+X+Y"
+  for monitor in &raw_out_vec[1..raw_out_vec.len()-1] {
+    let monitor_vec: Vec<&str> = monitor.split_whitespace().collect();
+    let name: &str = monitor_vec[1].strip_prefix("+").expect("Failed to strip prefix.");
+    let crop: &str = monitor_vec[2];
+    options.insert(name, crop);
+  }
+
+  // use fancy dmenu & screenshot
+  match dmenu(options) {
+    Some(selection) => {
+      let date: String = chrono::Local::now().format("%d-%m-%Y_%H-%M-%S").to_string();
+      let selection_vec: Vec<&str> = selection.split("/").collect();
+      let pos_vec: Vec<&str> = selection_vec[2].split("+").collect();
+
+      let width: &str = selection_vec[0];
+      let height: &str = selection_vec[1].split("x").collect::<Vec<&str>>()[1];
+      let x: &str = pos_vec[1];
+      let y: &str = pos_vec[2];
+      let mut screenshot = Command::new("import")
+        .args(["-window", "root", "-crop", &format!("{}x{}+{}+{}",width, height, x, y), &format!("/home/philip/Downloads/screenshot-{}.png", date)])
+        .spawn()
+        .expect("Failed to run import.");
+      screenshot.wait().expect("Failed to wait for import.");
+    }
+    None => {  }
+  }
+}
+
 pub fn char() {
   // Hashmap of possible options: (Key: "en_US char", Value: "special character")
   let options: HashMap<&str, &str> = HashMap::from([
@@ -77,6 +117,7 @@ pub fn launch_script() {
     ("poweroff", "sudo poweroff"),
     ("reboot", "sudo reboot"),
     ("run", "dmenu_run -c -l 5"),
+    ("screenshot", "yah g"),
     ("sleep", "sudo zzz"),
     ("standby", "xset dpms force suspend"),
   ]);
