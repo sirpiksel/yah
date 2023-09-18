@@ -33,12 +33,7 @@ fn dmenu<'a>(map: HashMap<&str, &'a str>) -> Option<&'a str> {
 }
 
 pub fn screenshot() {
-  // generate Hashmap of possible options: (Key: "name of display: e.g. DP-4", Value: "WxH+X+Y")
-  // example output of xrandr --listmonitors:
-  // Monitors: 3
-  //  0: +DP-4 2560/527x1440/396+1229+0  DP-4
-  //  1: +DP-1 1280/338x1024/270+3789+0  DP-1
-  //  2: +DP-2 1229/370x1536/300+0+0  DP-2
+  // generate Hashmap of possible options: (Key: "name of display: e.g. DP-4", Value: "W/mmwxH/mmh+X+Y")
   let mut options: HashMap<&str, &str> = HashMap::new();
   let raw_out: Output = Command::new("xrandr").args(["--listmonitors"]).output().expect("Failed to run xrandr.");
   let raw_out_str: &str = std::str::from_utf8(raw_out.stdout.as_slice()).expect("Failed to convert from &[u8] to &str.");
@@ -149,7 +144,9 @@ pub fn launch_application() {
     ("spotify", "spotify"),
     ("toolbox", "jetbrains-toolbox"),
     ("tor", "tor-browser"),
+    ("vscodium", "vscodium"),
     ("whatsapp", "whatsapp-for-linux"),
+    ("zoom", "zoom"),
   ]);
 
   // use fancy dmenu & launch output if supplied
