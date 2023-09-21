@@ -7,6 +7,7 @@ Dependencies
 ```
 dmenu
 xclip
+xrandr
 ```
 
 Options
@@ -15,5 +16,6 @@ Options
 h, help         print help
 a, appLaunch    start Application-Launcher
 s, scrLaunch    start Script-Launcher
-c, char         Launch Charpicker"
+c, char         start Charpicker
+g, grab         start Screenshot-Tool
 ```
