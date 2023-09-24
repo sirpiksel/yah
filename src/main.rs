@@ -1,7 +1,9 @@
-use std::env;
 use std::collections::VecDeque;
+use std::env;
+
 use crate::util::config::load_config;
-use crate::util::launcher::{launch_application, launch_script, char, screenshot};
+use crate::util::daemon::cronux;
+use crate::util::launcher::{char, launch_application, launch_script, screenshot};
 
 mod util;
 
@@ -28,13 +30,17 @@ fn main() {
   for arg in args.iter() {
     if arg != &args[0] { // skip if executable
       match arg.as_str() {
-        "h" | "help" => { help = true; break;}
+        "h" | "help" => {
+          help = true;
+          break;
+        }
         "d" | "daemon" => {
           if arg_depth == 0 {
             arg_depth += 1;
             args_sane.push_back("daemon");
           } else {
-            error = true; break;
+            error = true;
+            break;
           }
         }
         "a" | "appLaunch" => {
@@ -42,7 +48,8 @@ fn main() {
             arg_depth += 1;
             args_sane.push_back("appLaunch");
           } else {
-            error = true; break;
+            error = true;
+            break;
           }
         }
         "c" | "char" => {
@@ -50,7 +57,8 @@ fn main() {
             arg_depth += 1;
             args_sane.push_back("char");
           } else {
-            error = true; break;
+            error = true;
+            break;
           }
         }
         "g" | "grab" => {
@@ -58,7 +66,8 @@ fn main() {
             arg_depth += 1;
             args_sane.push_back("grab");
           } else {
-            error = true; break;
+            error = true;
+            break;
           }
         }
         "s" | "scrLaunch" => {
@@ -66,10 +75,14 @@ fn main() {
             arg_depth += 1;
             args_sane.push_back("scrLaunch");
           } else {
-            error = true; break;
+            error = true;
+            break;
           }
         }
-        _ => { error = true; break; }
+        _ => {
+          error = true;
+          break;
+        }
       }
     }
   }
@@ -81,11 +94,20 @@ fn main() {
     println!("{}", HELP);
   } else {
     match args_sane.pop_front() {
-      Some("daemon") => { util::daemon::cronux(); }
+      Some("daemon") => {
+        match load_config("cronux") {
+          Ok(options) => {
+            cronux(&options);
+          }
+          Err(err) => {
+            eprintln!("Error: {}", err);
+          }
+        }
+      }
       Some("appLaunch") => {
         match load_config("applications") {
           Ok(options) => {
-            launch_application(options);
+            launch_application(&options);
           }
           Err(err) => {
             eprintln!("Error: {}", err);
@@ -95,7 +117,7 @@ fn main() {
       Some("char") => {
         match load_config("char") {
           Ok(options) => {
-            char(options);
+            char(&options);
           }
           Err(err) => {
             eprintln!("Error: {}", err);
@@ -106,7 +128,7 @@ fn main() {
       Some("scrLaunch") => {
         match load_config("script") {
           Ok(options) => {
-            launch_script(options);
+            launch_script(&options);
           }
           Err(err) => {
             eprintln!("Error: {}", err);

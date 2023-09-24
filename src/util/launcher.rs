@@ -3,7 +3,7 @@ use std::env;
 use std::io::Write;
 use std::process::{Command, Output, Stdio};
 
-fn dmenu(map: HashMap<String, String>) -> Option<String> {
+fn dmenu(map: &HashMap<String, String>) -> Option<String> {
   // setup dmenu command
   let mut selector = Command::new("dmenu")
     .args(["-c", "-l", "10"])
@@ -53,7 +53,7 @@ pub fn screenshot() {
   }
 
   // Use fancy dmenu & screenshot
-  match dmenu(options) {
+  match dmenu(&options) {
     Some(selection) => {
       let date: String = chrono::Local::now().format("%d-%m-%Y_%H-%M-%S").to_string();
       let selection_vec: Vec<&str> = selection.split("/").collect();
@@ -82,7 +82,7 @@ pub fn screenshot() {
   }
 }
 
-pub fn char(options: HashMap<String, String>) {
+pub fn char(options: &HashMap<String, String>) {
   // Use fancy dmenu & copy char if supplied
   match dmenu(options) {
     Some(selection) => {
@@ -104,7 +104,7 @@ pub fn char(options: HashMap<String, String>) {
   }
 }
 
-pub fn launch_script(options: HashMap<String, String>) {
+pub fn launch_script(options: &HashMap<String, String>) {
   // Use fancy dmenu & launch output if supplied
   match dmenu(options) {
     Some(selection) => {
@@ -117,7 +117,7 @@ pub fn launch_script(options: HashMap<String, String>) {
   }
 }
 
-pub fn launch_application(options: HashMap<String, String>) {
+pub fn launch_application(options: &HashMap<String, String>) {
   // Use fancy dmenu & launch output if supplied
   match dmenu(options) {
     Some(selection) => {

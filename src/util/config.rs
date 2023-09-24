@@ -1,5 +1,6 @@
-use serde_json::{from_str, Value};
 use std::collections::HashMap;
+
+use serde_json::{from_str, Value};
 
 pub fn load_config(object_list: &str) -> Result<HashMap<String, String>, String> {
   let config_json = include_str!("../../config.json");
