@@ -7,7 +7,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::process;
 
-use chrono::{format::DelayedFormat, format::StrftimeItems, NaiveTime};
+use chrono::NaiveTime;
 use chrono::Local;
 
 use crate::env;
@@ -105,17 +105,20 @@ fn create_cronux_pipe() -> io::Result<()> {
 fn write_cronux_pipe(timetable: &HashMap<String, String>) -> io::Result<()> {
   // Get the current time
   let current_time = Local::now().time();
-  let current_time_formatted: DelayedFormat<StrftimeItems> = current_time.format("%H:%M");
+
+  let mut activity_name = "Unknown";
+  let mut activity_time = NaiveTime::from_hms_opt(0, 0, 0).expect("Failed to create NaiveTime");
+  let mut next_activity_time = NaiveTime::from_hms_opt(0, 0, 0).expect("Failed to create NaiveTime");
 
   // Determine the current activity
-  let mut current_activity = "Unknown";
-  let mut current_activity_time = NaiveTime::from_hms_opt(0, 0, 0).expect("Failed to create NaiveTime");
-
-  for (activity, start_time_str) in timetable.iter() {
-    if let Some(start_time) = NaiveTime::parse_from_str(start_time_str, "%H:%M").ok() {
-      if current_time >= start_time && start_time > current_activity_time {
-        current_activity = activity;
-        current_activity_time = start_time;
+  for (result_name, result_time_str) in timetable.iter() {
+    if let Some(result_time) = NaiveTime::parse_from_str(result_time_str, "%R").ok() {
+      if result_time <= current_time && activity_time <= result_time {
+        activity_name = result_name;
+        activity_time = result_time;
+      }
+      if current_time < result_time && result_time < next_activity_time {
+        next_activity_time = result_time;
       }
     }
   }
@@ -124,8 +127,13 @@ fn write_cronux_pipe(timetable: &HashMap<String, String>) -> io::Result<()> {
   let pipe_path = Path::new("./cronux");
   let mut pipe = File::create(pipe_path)?;
 
+  // Calculate time done & time remaining
+  let time_done = (current_time - activity_time).num_minutes().to_string();
+  let time_remaining = (current_time - next_activity_time).num_minutes().to_string();
+
+
   // Write the current activity and starting time to the pipe
-  let entry = format!("{} {}", current_activity, current_time_formatted);
+  let entry = format!("{}: +{} -{}", activity_name, time_done, time_remaining);
   pipe.write_all(entry.as_bytes())?;
 
   Ok(())
