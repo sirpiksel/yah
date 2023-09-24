@@ -1,7 +1,10 @@
 use std::env;
 use std::collections::VecDeque;
+use crate::util::config::load_config;
+use crate::util::launcher::{launch_application, launch_script, char, screenshot};
 
 mod util;
+
 
 fn main() {
   // argument setup
@@ -15,28 +18,29 @@ fn main() {
   const HELP: &'static str = "Usage: yah [OPTION]...
   Options:
   h, help         print help
-  a, appLaunch    start Application-Launcher
-  s, scrLaunch    start Script-Launcher
-  c, char         start Charpicker
-  g, grab         start Screenshot-Tool";
+  d, daemon       start Daemon
+  a, appLaunch    launch Application-Launcher
+  c, char         launch Charpicker
+  g, grab         launch Screenshot-Tool
+  s, scrLaunch    launch Script-Launcher";
 
   // process arguments
   for arg in args.iter() {
     if arg != &args[0] { // skip if executable
       match arg.as_str() {
         "h" | "help" => { help = true; break;}
-        "a" | "appLaunch" => {
+        "d" | "daemon" => {
           if arg_depth == 0 {
             arg_depth += 1;
-            args_sane.push_back("appLaunch");
+            args_sane.push_back("daemon");
           } else {
             error = true; break;
           }
         }
-        "s" | "scrLaunch" => {
+        "a" | "appLaunch" => {
           if arg_depth == 0 {
             arg_depth += 1;
-            args_sane.push_back("scrLaunch");
+            args_sane.push_back("appLaunch");
           } else {
             error = true; break;
           }
@@ -57,6 +61,14 @@ fn main() {
             error = true; break;
           }
         }
+        "s" | "scrLaunch" => {
+          if arg_depth == 0 {
+            arg_depth += 1;
+            args_sane.push_back("scrLaunch");
+          } else {
+            error = true; break;
+          }
+        }
         _ => { error = true; break; }
       }
     }
@@ -69,10 +81,38 @@ fn main() {
     println!("{}", HELP);
   } else {
     match args_sane.pop_front() {
-      Some("appLaunch") => { util::launcher::launch_application(); }
-      Some("scrLaunch") => { util::launcher::launch_script(); }
-      Some("char") => { util::launcher::char(); }
-      Some("grab") => { util::launcher::screenshot(); }
+      Some("daemon") => { util::daemon::cronux(); }
+      Some("appLaunch") => {
+        match load_config("applications") {
+          Ok(options) => {
+            launch_application(options);
+          }
+          Err(err) => {
+            eprintln!("Error: {}", err);
+          }
+        }
+      }
+      Some("char") => {
+        match load_config("char") {
+          Ok(options) => {
+            char(options);
+          }
+          Err(err) => {
+            eprintln!("Error: {}", err);
+          }
+        }
+      }
+      Some("grab") => { screenshot(); }
+      Some("scrLaunch") => {
+        match load_config("script") {
+          Ok(options) => {
+            launch_script(options);
+          }
+          Err(err) => {
+            eprintln!("Error: {}", err);
+          }
+        }
+      }
       Some(_) => { panic!("invalid element in args_sane"); }
       None => { panic!("no elements in args_sane"); }
     }

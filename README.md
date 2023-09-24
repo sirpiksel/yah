@@ -14,8 +14,9 @@ Options
 -------
 ```
 h, help         print help
-a, appLaunch    start Application-Launcher
-s, scrLaunch    start Script-Launcher
-c, char         start Charpicker
-g, grab         start Screenshot-Tool
+d, daemon       start Daemon
+a, appLaunch    launch Application-Launcher
+c, char         launch Charpicker
+g, grab         launch Screenshot-Tool
+s, scrLaunch    launch Script-Launcher
 ```

@@ -1,8 +1,9 @@
 use std::collections::HashMap;
+use std::env;
 use std::io::Write;
 use std::process::{Command, Output, Stdio};
 
-fn dmenu<'a>(map: HashMap<&str, &'a str>) -> Option<&'a str> {
+fn dmenu(map: HashMap<String, String>) -> Option<String> {
   // setup dmenu command
   let mut selector = Command::new("dmenu")
     .args(["-c", "-l", "10"])
@@ -12,9 +13,9 @@ fn dmenu<'a>(map: HashMap<&str, &'a str>) -> Option<&'a str> {
     .expect("Failed to run dmenu.");
 
   // pipe in keys
-  let mut keys: Vec<&str> = map.keys().map(|key| *key).collect();
+  let mut keys: Vec<&String> = map.keys().collect();
   keys.sort();
-  let keys_str: String = keys.join("\n");
+  let keys_str: String = keys.iter().map(|key| key.as_str()).collect::<Vec<&str>>().join("\n");
   let mut opt_in = selector.stdin.take().expect("Failed to open stdin.");
   std::thread::spawn(move || {
     opt_in.write_all(keys_str.as_bytes()).expect("Failed to write to stdin.");
@@ -25,28 +26,33 @@ fn dmenu<'a>(map: HashMap<&str, &'a str>) -> Option<&'a str> {
   let select_key: &str = std::str::from_utf8(raw_out.stdout.as_slice()).expect("Failed to convert from &[u8] to &str.");
 
   // return selection
-  return if select_key != "" {
-    Some(&map.get(select_key.strip_suffix("\n").expect("Failed to strip newline.")).expect(""))
+  if select_key != "" {
+    let select_key = select_key.trim_end();
+    Some(map.get(select_key).expect("Key not found").clone())
   } else {
     None
   }
 }
 
 pub fn screenshot() {
-  // generate Hashmap of possible options: (Key: "name of display: e.g. DP-4", Value: "W/mmwxH/mmh+X+Y")
-  let mut options: HashMap<&str, &str> = HashMap::new();
-  let raw_out: Output = Command::new("xrandr").args(["--listmonitors"]).output().expect("Failed to run xrandr.");
+  // Generate HashMap of possible options: (Key: "name of display: e.g. DP-4", Value: "W/mmwxH/mmh+X+Y")
+  let mut options: HashMap<String, String> = HashMap::new();
+  let raw_out: Output = Command::new("xrandr")
+    .args(["--listmonitors"])
+    .output()
+    .expect("Failed to run xrandr.");
   let raw_out_str: &str = std::str::from_utf8(raw_out.stdout.as_slice()).expect("Failed to convert from &[u8] to &str.");
   let raw_out_vec: Vec<&str> = raw_out_str.split("\n").collect();
-  // get the 2nd column and strip the "+" from the name; get 3rd column and convert from "W/mmwxH/mmh+X+Y" to "WxH+X+Y"
-  for monitor in &raw_out_vec[1..raw_out_vec.len()-1] {
+
+  // Get the 2nd column and strip the "+" from the name; get 3rd column and convert from "W/mmwxH/mmh+X+Y" to "WxH+X+Y"
+  for monitor in &raw_out_vec[1..raw_out_vec.len() - 1] {
     let monitor_vec: Vec<&str> = monitor.split_whitespace().collect();
-    let name: &str = monitor_vec[1].strip_prefix("+").expect("Failed to strip prefix.");
-    let crop: &str = monitor_vec[2];
+    let name: String = monitor_vec[1].strip_prefix("+").expect("Failed to strip prefix.").to_string();
+    let crop: String = monitor_vec[2].to_string();
     options.insert(name, crop);
   }
 
-  // use fancy dmenu & screenshot
+  // Use fancy dmenu & screenshot
   match dmenu(options) {
     Some(selection) => {
       let date: String = chrono::Local::now().format("%d-%m-%Y_%H-%M-%S").to_string();
@@ -57,30 +63,27 @@ pub fn screenshot() {
       let height: &str = selection_vec[1].split("x").collect::<Vec<&str>>()[1];
       let x: &str = pos_vec[1];
       let y: &str = pos_vec[2];
+      let env_home = env::var("HOME").expect("Failed to get HOME.");
+
       let mut screenshot = Command::new("import")
-        .args(["-window", "root", "-crop", &format!("{}x{}+{}+{}",width, height, x, y), &format!("/home/philip/Downloads/screenshot-{}.png", date)])
+        .args([
+          "-window",
+          "root",
+          "-crop",
+          &format!("{}x{}+{}+{}", width, height, x, y),
+          &format!("{}/Downloads/screenshot-{}.png", env_home, date),
+        ])
         .spawn()
         .expect("Failed to run import.");
+
       screenshot.wait().expect("Failed to wait for import.");
     }
-    None => {  }
+    None => {}
   }
 }
 
-pub fn char() {
-  // Hashmap of possible options: (Key: "en_US char", Value: "special character")
-  let options: HashMap<&str, &str> = HashMap::from([
-    ("a", "ä"),
-    ("A", "Ä"),
-    ("o", "ö"),
-    ("O", "Ö"),
-    ("u", "ü"),
-    ("U", "Ü"),
-    ("sz", "ß"),
-    ("SZ", "ẞ"),
-  ]);
-
-  // use fancy dmenu & copy char if supplied
+pub fn char(options: HashMap<String, String>) {
+  // Use fancy dmenu & copy char if supplied
   match dmenu(options) {
     Some(selection) => {
       let mut clip = Command::new("xclip")
@@ -94,64 +97,34 @@ pub fn char() {
       std::thread::spawn(move || {
         opt_in.write_all(selection.as_bytes()).expect("Failed to write to stdin.");
       });
-      let raw_out: Output = clip.wait_with_output().expect("Failed to read stdout.");
-      let feedback: &str = std::str::from_utf8(raw_out.stdout.as_slice()).expect("Failed to convert from &[u8] to &str.");
-      println!("{}", feedback);
+
+      let _ = clip.wait().expect("Failed to wait for xclip.");
     }
-    None => {  }
-  }
-
-}
-
-pub fn launch_script() {
-  // Hashmap of possible options: (Key: "command name", Value: "command")
-  let options: HashMap<&str, &str> = HashMap::from([
-    ("kill Xorg", "pkill Xorg"),
-    ("kill chromium", "pkill chromium"),
-    ("manage bD", "betterdiscord-installer"),
-    ("poweroff", "sudo poweroff"),
-    ("reboot", "sudo reboot"),
-    ("run", "dmenu_run -c -l 5"),
-    ("screenshot", "yah g"),
-    ("sleep", "sudo zzz"),
-    ("standby", "xset dpms force suspend"),
-  ]);
-
-  // use fancy dmenu & launch output if supplied
-  match dmenu(options) {
-    Some(selection) => { Command::new("sh").args(["-c", selection]).output().expect("Failed to launch."); }
-    None => {  }
+    None => {}
   }
 }
 
-pub fn launch_application() {
-  // Hashmap of possible options: (Key: "program", Value: "launch command")
-  let options: HashMap<&str, &str> = HashMap::from([
-    ("arandr", "arandr"),
-    ("bleachbit", "bleachbit"),
-    ("chromium", "chromium"),
-    ("clion", "/home/philip/.local/share/JetBrains/Toolbox/scripts/clion"),
-    ("datagrip", "/home/philip/.local/share/JetBrains/Toolbox/scripts/datagrip"),
-    ("discord", "discord"),
-    ("gimp", "gimp"),
-    ("inkscape", "inkscape"),
-    ("lxappearance", "lxappearance"),
-    ("nvidia", "nvidia-settings"),
-    ("office", "libreoffice"),
-    ("piper", "piper"),
-    ("prismlauncher", "prismlauncher"),
-    ("pycharm", "/home/philip/.local/share/JetBrains/Toolbox/scripts/pycharm"),
-    ("spotify", "spotify"),
-    ("toolbox", "jetbrains-toolbox"),
-    ("tor", "tor-browser"),
-    ("vscodium", "vscodium"),
-    ("whatsapp", "whatsapp-for-linux"),
-    ("zoom", "zoom"),
-  ]);
-
-  // use fancy dmenu & launch output if supplied
+pub fn launch_script(options: HashMap<String, String>) {
+  // Use fancy dmenu & launch output if supplied
   match dmenu(options) {
-    Some(selection) => { Command::new(selection).spawn().expect("Failed to launch."); }
-    None => {  }
+    Some(selection) => {
+      Command::new("sh")
+        .args(["-c", &selection])
+        .output()
+        .expect("Failed to launch.");
+    }
+    None => {}
+  }
+}
+
+pub fn launch_application(options: HashMap<String, String>) {
+  // Use fancy dmenu & launch output if supplied
+  match dmenu(options) {
+    Some(selection) => {
+      Command::new(&selection)
+        .spawn()
+        .expect("Failed to launch.");
+    }
+    None => {}
   }
 }
