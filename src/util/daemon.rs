@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs::{self, create_dir_all, File, set_permissions};
 use std::io;
-use std::io::Write;
+use std::io::{Read, Write};
 use std::os::fd::AsRawFd;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
@@ -12,7 +12,7 @@ use chrono::Local;
 
 use crate::env;
 
-pub fn cronux(options: &HashMap<String, String>) {
+pub fn daemon(options: &HashMap<String, String>) {
   // Fork the current process to create a child process
   match unsafe { libc::fork() } {
     -1 => {
@@ -40,7 +40,7 @@ pub fn cronux(options: &HashMap<String, String>) {
 
 unsafe fn daemonize() {
   // Get XDG_CONFIG_HOME environment variable
-  let xdg_config_home = match env::var("XDG_CONFIG_HOME") {
+  let env_config = match env::var("XDG_CONFIG_HOME") {
     Ok(path) => path,
     Err(_) => {
       eprintln!("XDG_CONFIG_HOME is not set.");
@@ -49,7 +49,7 @@ unsafe fn daemonize() {
   };
 
   // Create the directory if it doesn't exist
-  let yah_dir = format!("{}/yah", xdg_config_home);
+  let yah_dir = format!("{}/yah", env_config);
   if let Err(err) = create_dir_all(&yah_dir) {
     eprintln!("Failed to create directory: {}", err);
     process::exit(1);
@@ -125,8 +125,44 @@ fn write_cronux_pipe(timetable: &HashMap<String, String>) -> io::Result<()> {
   let mut pipe = File::create(pipe_path)?;
 
   // Write the current activity and starting time to the pipe
-  let entry = format!("{} {}\n", current_activity, current_time_formatted);
+  let entry = format!("{} {}", current_activity, current_time_formatted);
   pipe.write_all(entry.as_bytes())?;
 
   Ok(())
+}
+
+
+pub fn cronux() {
+  let env_config = match env::var("XDG_CONFIG_HOME") {
+    Ok(path) => path,
+    Err(_) => {
+      eprintln!("XDG_CONFIG_HOME is not set.");
+      process::exit(1);
+    }
+  };
+  let pipe = format!("{}/yah/cronux", env_config).to_string();
+
+  // Attempt to open the named pipe for reading.
+  match File::open(pipe.clone()) {
+    Ok(file) => {
+      // Create a buffer to read the data into.
+      let mut buffer = Vec::new();
+
+      // Read from the named pipe and store it in the buffer.
+      if let Err(err) = file.take(1024).read_to_end(&mut buffer) {
+        eprintln!("Error reading from named pipe: {:?}", err);
+        return;
+      }
+
+      // Convert the buffer to a string and print it.
+      if let Ok(contents) = String::from_utf8(buffer) {
+        println!("{}", contents);
+      } else {
+        eprintln!("Failed to convert pipe contents to a string.");
+      }
+    }
+    Err(err) => {
+      eprintln!("Error opening named pipe: {:?}", err);
+    }
+  }
 }

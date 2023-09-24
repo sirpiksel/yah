@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 use std::env;
 
 use crate::util::config::load_config;
-use crate::util::daemon::cronux;
+use crate::util::daemon::{cronux, daemon};
 use crate::util::launcher::{char, launch_application, launch_script, screenshot};
 
 mod util;
@@ -24,7 +24,8 @@ fn main() {
   a, appLaunch    launch Application-Launcher
   c, char         launch Charpicker
   g, grab         launch Screenshot-Tool
-  s, scrLaunch    launch Script-Launcher";
+  s, scrLaunch    launch Script-Launcher
+  x, cronux       print cronux";
 
   // process arguments
   for arg in args.iter() {
@@ -79,6 +80,15 @@ fn main() {
             break;
           }
         }
+        "x" | "cronux" => {
+          if arg_depth == 0 {
+            arg_depth += 1;
+            args_sane.push_back("cronux");
+          } else {
+            error = true;
+            break;
+          }
+        }
         _ => {
           error = true;
           break;
@@ -97,13 +107,14 @@ fn main() {
       Some("daemon") => {
         match load_config("cronux") {
           Ok(options) => {
-            cronux(&options);
+            daemon(&options);
           }
           Err(err) => {
             eprintln!("Error: {}", err);
           }
         }
       }
+      Some("cronux") => { cronux(); }
       Some("appLaunch") => {
         match load_config("applications") {
           Ok(options) => {

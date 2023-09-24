@@ -21,4 +21,5 @@ a, appLaunch    launch Application-Launcher
 c, char         launch Charpicker
 g, grab         launch Screenshot-Tool
 s, scrLaunch    launch Script-Launcher
+x, cronux       print cronux
 ```
