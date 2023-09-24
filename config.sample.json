@@ -1,0 +1,114 @@
+{
+  "char": [
+    {
+      "key": "a",
+      "value": "ä"
+    },
+    {
+      "key": "A",
+      "value": "Ä"
+    },
+    {
+      "key": "o",
+      "value": "ö"
+    },
+    {
+      "key": "O",
+      "value": "Ö"
+    },
+    {
+      "key": "u",
+      "value": "ü"
+    },
+    {
+      "key": "U",
+      "value": "Ü"
+    },
+    {
+      "key": "sz",
+      "value": "ß"
+    },
+    {
+      "key": "SZ",
+      "value": "ẞ"
+    }
+  ],
+  "script": [
+    {
+      "key": "kill Xorg",
+      "value": "pkill Xorg"
+    },
+    {
+      "key": "kill chromium",
+      "value": "pkill chromium"
+    },
+    {
+      "key": "poweroff",
+      "value": "sudo poweroff"
+    },
+    {
+      "key": "reboot",
+      "value": "sudo reboot"
+    },
+    {
+      "key": "screenshot",
+      "value": "yah g"
+    }
+  ],
+  "applications": [
+    {
+      "key": "arandr",
+      "value": "arandr"
+    },
+    {
+      "key": "chromium",
+      "value": "chromium"
+    },
+    {
+      "key": "gimp",
+      "value": "gimp"
+    },
+    {
+      "key": "inkscape",
+      "value": "inkscape"
+    },
+    {
+      "key": "office",
+      "value": "libreoffice"
+    }
+  ],
+  "cronux": [
+    {
+      "key": "Breakfast",
+      "value": "06:10"
+    },
+    {
+      "key": "Bathroom",
+      "value": "06:30"
+    },
+    {
+      "key": "Work",
+      "value": "08:00"
+    },
+    {
+      "key": "Lunch",
+      "value": "13:00"
+    },
+    {
+      "key": "Work",
+      "value": "14:00"
+    },
+    {
+      "key": "Dinner",
+      "value": "18:15"
+    },
+    {
+      "key": "Sport",
+      "value": "19:00"
+    },
+    {
+      "key": "Sleep",
+      "value": "22:00"
+    }
+  ]
+}  
