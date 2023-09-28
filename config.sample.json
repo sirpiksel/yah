@@ -79,36 +79,36 @@
   ],
   "cronux": [
     {
-      "key": "Breakfast",
-      "value": "06:10"
+      "key": "06:10",
+      "value": "Breakfast"
     },
     {
-      "key": "Bathroom",
-      "value": "06:30"
+      "key": "06:30",
+      "value": "Bathroom"
     },
     {
-      "key": "Work",
-      "value": "08:00"
+      "key": "08:00",
+      "value": "Work"
     },
     {
-      "key": "Lunch",
-      "value": "13:00"
+      "key": "13:00",
+      "value": "Lunch"
     },
     {
-      "key": "Work",
-      "value": "14:00"
+      "key": "14:00",
+      "value": "Work"
     },
     {
-      "key": "Dinner",
-      "value": "18:15"
+      "key": "18:15",
+      "value": "Dinner"
     },
     {
-      "key": "Sport",
-      "value": "19:00"
+      "key": "19:00",
+      "value": "Sport"
     },
     {
-      "key": "Sleep",
-      "value": "22:00"
+      "key": "22:00",
+      "value": "Sleep"
     }
   ]
 }  

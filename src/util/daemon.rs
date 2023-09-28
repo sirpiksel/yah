@@ -7,8 +7,8 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::process;
 
-use chrono::NaiveTime;
 use chrono::Local;
+use chrono::NaiveTime;
 
 use crate::env;
 
@@ -106,12 +106,12 @@ fn write_cronux_pipe(timetable: &HashMap<String, String>) -> io::Result<()> {
   // Get the current time
   let current_time = Local::now().time();
 
-  let mut activity_name = "Unknown";
   let mut activity_time = NaiveTime::from_hms_opt(0, 0, 0).expect("Failed to create NaiveTime");
   let mut next_activity_time = NaiveTime::from_hms_opt(23, 59, 59).expect("Failed to create NaiveTime");
+  let mut activity_name = "Unknown";
 
   // Determine the current activity
-  for (result_name, result_time_str) in timetable.iter() {
+  for (result_time_str, result_name) in timetable.iter() {
     if let Some(result_time) = NaiveTime::parse_from_str(result_time_str, "%R").ok() {
       if result_time <= current_time && activity_time <= result_time {
         activity_name = result_name;
