@@ -133,7 +133,7 @@ fn write_cronux_pipe(timetable: &HashMap<String, String>) -> io::Result<()> {
 
 
   // Write the current activity and starting time to the pipe
-  let entry = format!("{}: +{} -{}", activity_name, time_done, time_remaining);
+  let entry = format!("{} +{} -{}", activity_name, time_done, time_remaining);
   pipe.write_all(entry.as_bytes())?;
 
   Ok(())
