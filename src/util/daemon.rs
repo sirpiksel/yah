@@ -108,7 +108,7 @@ fn write_cronux_pipe(timetable: &HashMap<String, String>) -> io::Result<()> {
 
   let mut activity_name = "Unknown";
   let mut activity_time = NaiveTime::from_hms_opt(0, 0, 0).expect("Failed to create NaiveTime");
-  let mut next_activity_time = NaiveTime::from_hms_opt(0, 0, 0).expect("Failed to create NaiveTime");
+  let mut next_activity_time = NaiveTime::from_hms_opt(23, 59, 59).expect("Failed to create NaiveTime");
 
   // Determine the current activity
   for (result_name, result_time_str) in timetable.iter() {
@@ -129,7 +129,7 @@ fn write_cronux_pipe(timetable: &HashMap<String, String>) -> io::Result<()> {
 
   // Calculate time done & time remaining
   let time_done = (current_time - activity_time).num_minutes().to_string();
-  let time_remaining = (current_time - next_activity_time).num_minutes().to_string();
+  let time_remaining = (next_activity_time - current_time).num_minutes().to_string();
 
 
   // Write the current activity and starting time to the pipe
