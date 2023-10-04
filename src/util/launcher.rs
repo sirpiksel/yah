@@ -104,24 +104,12 @@ pub fn char(options: &HashMap<String, String>) {
   }
 }
 
-pub fn launch_script(options: &HashMap<String, String>) {
+pub fn launch(options: &HashMap<String, String>) {
   // Use fancy dmenu & launch output if supplied
   match dmenu(options) {
     Some(selection) => {
       Command::new("sh")
         .args(["-c", &selection])
-        .output()
-        .expect("Failed to launch.");
-    }
-    None => {}
-  }
-}
-
-pub fn launch_application(options: &HashMap<String, String>) {
-  // Use fancy dmenu & launch output if supplied
-  match dmenu(options) {
-    Some(selection) => {
-      Command::new(&selection)
         .spawn()
         .expect("Failed to launch.");
     }

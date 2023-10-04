@@ -123,6 +123,10 @@ fn write_cronux_pipe(timetable: &HashMap<String, String>) -> io::Result<()> {
     }
   }
 
+  // play sound if the activity just changed
+  //if current_time == activity_time {
+  //}
+
   // Open the named pipe "cronux" in write-only mode
   let pipe_path = Path::new("./cronux");
   let mut pipe = File::create(pipe_path)?;

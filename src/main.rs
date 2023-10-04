@@ -3,7 +3,7 @@ use std::env;
 
 use crate::util::config::load_config;
 use crate::util::daemon::{cronux, daemon};
-use crate::util::launcher::{char, launch_application, launch_script, screenshot};
+use crate::util::launcher::{char, launch, screenshot};
 
 mod util;
 
@@ -118,7 +118,7 @@ fn main() {
       Some("appLaunch") => {
         match load_config("applications") {
           Ok(options) => {
-            launch_application(&options);
+            launch(&options);
           }
           Err(err) => {
             eprintln!("Error: {}", err);
@@ -139,7 +139,7 @@ fn main() {
       Some("scrLaunch") => {
         match load_config("script") {
           Ok(options) => {
-            launch_script(&options);
+            launch(&options);
           }
           Err(err) => {
             eprintln!("Error: {}", err);
