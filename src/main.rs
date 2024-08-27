@@ -2,7 +2,6 @@ use std::collections::VecDeque;
 use std::env;
 
 use crate::util::config::load_config;
-use crate::util::daemon::{cronux, daemon};
 use crate::util::launcher::{char, launch, screenshot};
 
 mod util;
@@ -20,12 +19,10 @@ fn main() {
   const HELP: &'static str = "Usage: yah [OPTION]...
   Options:
   h, help         print help
-  d, daemon       start Daemon
   a, appLaunch    launch Application-Launcher
   c, char         launch Charpicker
   g, grab         launch Screenshot-Tool
-  s, scrLaunch    launch Script-Launcher
-  x, cronux       print cronux";
+  s, scrLaunch    launch Script-Launcher";
 
   // process arguments
   for arg in args.iter() {
@@ -34,15 +31,6 @@ fn main() {
         "h" | "help" => {
           help = true;
           break;
-        }
-        "d" | "daemon" => {
-          if arg_depth == 0 {
-            arg_depth += 1;
-            args_sane.push_back("daemon");
-          } else {
-            error = true;
-            break;
-          }
         }
         "a" | "appLaunch" => {
           if arg_depth == 0 {
@@ -80,15 +68,6 @@ fn main() {
             break;
           }
         }
-        "x" | "cronux" => {
-          if arg_depth == 0 {
-            arg_depth += 1;
-            args_sane.push_back("cronux");
-          } else {
-            error = true;
-            break;
-          }
-        }
         _ => {
           error = true;
           break;
@@ -104,17 +83,6 @@ fn main() {
     println!("{}", HELP);
   } else {
     match args_sane.pop_front() {
-      Some("daemon") => {
-        match load_config("cronux") {
-          Ok(options) => {
-            daemon(&options);
-          }
-          Err(err) => {
-            eprintln!("Error: {}", err);
-          }
-        }
-      }
-      Some("cronux") => { cronux(); }
       Some("appLaunch") => {
         match load_config("applications") {
           Ok(options) => {
