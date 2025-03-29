@@ -76,39 +76,5 @@
       "key": "office",
       "value": "libreoffice"
     }
-  ],
-  "cronux": [
-    {
-      "key": "06:10",
-      "value": "Breakfast"
-    },
-    {
-      "key": "06:30",
-      "value": "Bathroom"
-    },
-    {
-      "key": "08:00",
-      "value": "Work"
-    },
-    {
-      "key": "13:00",
-      "value": "Lunch"
-    },
-    {
-      "key": "14:00",
-      "value": "Work"
-    },
-    {
-      "key": "18:15",
-      "value": "Dinner"
-    },
-    {
-      "key": "19:00",
-      "value": "Sport"
-    },
-    {
-      "key": "22:00",
-      "value": "Sleep"
-    }
   ]
-}  
+}

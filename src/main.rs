@@ -4,7 +4,10 @@ use std::env;
 use crate::util::config::load_config;
 use crate::util::launcher::{char, launch, screenshot};
 
-mod util;
+mod util {
+  pub mod config;
+  pub mod launcher;
+}
 
 
 fn main() {
